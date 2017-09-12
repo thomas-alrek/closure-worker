@@ -9,7 +9,17 @@ Tested on latest version of Google Chrome and Safari.
 
 [Live demo](https://cdn.rawgit.com/thomas-alrek/closure-worker/0fde652b/index.html)
 
-Usage
+### Installation
+
+```
+yarn add closure-worker
+```
+
+```
+npm install closure-worker
+```
+
+### Example
 
 ```javascript
 const blocking = (n) => {
