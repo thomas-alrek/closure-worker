@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ClosureWorker</title>
+</head>
+<body>
+    <h1>
+        ClosureWorker Demo
+    </h1>
+    <p>
+        This demo demonstrates the power of using a WebWorker to exceute blocking tasks.<br>
+        In this demonstration we will do <b>3 million</b> iterations of a prime number algorithm.
+    </p>
+    <p>
+        The first option will do this without a WebWorker, and will cause the UI thread of this tab to block for a few seconds.<br>
+        The second option will do the exact same thing, but in a separate thread using a WebWorker compiled with ClosureWorker.
+    </p>
+    <p>
+        Notice this clock. It will freeze when the first option is running, but not with the second.
+        <h1 id="clock"></h1>
+    </p>
+    <button onclick="calculateBlocking()">Calculate</button>
+    <button onclick="calculateWorker()">Calculate with ClosureWorker</button>
+    <h1 id="result"></h1>
+    <script src="closure-worker.js"></script>
+    <script>
+        let clock = document.getElementById('clock')
+        let result = document.getElementById('result')
+
+        // Clock to indicate blocking
+        setInterval(() => {
+            clock.innerHTML = new Date().toISOString()
+        })
+
+        // Calculuate 3 million primes blocking
+        function calculateBlocking () {
+            result.innerHTML = ''
+            const iterations = 3000000;
+            function calculatePrimes(iterations) {
+                var primes = [];
+                for (var i = 0; i < iterations; i++) {
+                    var candidate = i;
+                    var isPrime = true;
+                    for (var c = 2; c <= Math.sqrt(candidate); ++c) {
+                        if (candidate % c === 0) {
+                            // not prime
+                            isPrime = false;
+                            break;
+                        }
+                    }
+                    if (isPrime) {
+                        primes.push(candidate);
+                    }
+                }
+                return primes;
+            }
+            let prime = calculatePrimes(iterations)
+            result.innerHTML = 'Result: ' + prime[prime.length - 1]
+        }
+
+        // Calculuate 3 million primes in WebWorker
+        function calculateWorker () {
+            result.innerHTML = ''
+            let worker = new ClosureWorker(() => {
+            function calculatePrimes(iterations) {
+                var primes = [];
+                for (var i = 0; i < iterations; i++) {
+                    var candidate = i;
+                    var isPrime = true;
+                    for (var c = 2; c <= Math.sqrt(candidate); ++c) {
+                        if (candidate % c === 0) {
+                            // not prime
+                            isPrime = false;
+                            break;
+                        }
+                    }
+                    if (isPrime) {
+                        primes.push(candidate);
+                    }
+                }
+                return primes;
+            }
+            let prime = calculatePrimes(iterations)
+            postMessage(prime[prime.length - 1])
+        }, (msg) => {
+            result.innerHTML = 'Result: ' + msg.data
+        }, { iterations: 3000000 })
+        }
+    </script>
+</body>
+</html>
