@@ -7,6 +7,8 @@ This get's turned into a Blob and then a Object URL which can be passed to a nat
 
 Tested on latest version of Google Chrome and Safari.
 
+[Live demo](https://cdn.rawgit.com/thomas-alrek/closure-worker/0fde652b/index.html)
+
 Usage
 
 ```javascript
@@ -15,7 +17,8 @@ const blocking = (n) => {
     for (let i = 0; i < n; i++) {
         sum += Math.pow(Math.random() * Math.PI, 2)
     }
-    return sum
+    // return sum
+    postMessage(sum)
 }
 
 const handler = (msg) => {
