@@ -22,13 +22,15 @@
         Notice this clock. It will freeze when the first option is running, but not with the second.
         <h1 id="clock"></h1>
     </p>
-    <button onclick="calculateBlocking()">Calculate</button>
-    <button onclick="calculateWorker()">Calculate with ClosureWorker</button>
+    <button id="blockBtn" onclick="calculateBlocking()">Calculate</button>
+    <button id="workerBtn" onclick="calculateWorker()">Calculate with ClosureWorker</button>
     <h1 id="result"></h1>
     <script src="closure-worker.js"></script>
     <script>
         let clock = document.getElementById('clock')
         let result = document.getElementById('result')
+        let blockBtn = document.getElementById('blockBtn')
+        let workerBtn = document.getElementById('workerBtn')
 
         // Clock to indicate blocking
         setInterval(() => {
@@ -64,6 +66,8 @@
         // Calculuate 3 million primes in WebWorker
         function calculateWorker () {
             result.innerHTML = ''
+            blockBtn.disabled = true
+            workerBtn.disabled = true
             let worker = new ClosureWorker(() => {
             function calculatePrimes(iterations) {
                 var primes = [];
@@ -87,6 +91,8 @@
             postMessage(prime[prime.length - 1])
         }, (msg) => {
             result.innerHTML = 'Result: ' + msg.data
+            blockBtn.disabled = false
+            workerBtn.disabled = false
         }, { iterations: 3000000 })
         }
     </script>
